@@ -13,6 +13,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { DataTable } from "react-native-paper";
 
 export interface TODO {
   userId: number;
@@ -72,7 +73,7 @@ export default function App() {
             <Text className="text-lg font-bold">Todos ({todos.length})</Text>
           </View>
           <ScrollView className="flex-1 overflow-auto no-scrollbar p-3 bg-white rounded">
-            {todos.length ? (
+            {/* {todos.length ? (
               todos.map((todo: TODO) => {
                 return (
                   <View key={todo.id} className="border-b p-2 border-slate-300">
@@ -83,12 +84,35 @@ export default function App() {
                 );
               })
             ) : (
-              <View className="p-3 bg-white rounded">
+              <View className="p-3 bg-white rounded ">
                 <Text className="text-center font-semibold ">
                   No Data Available
                 </Text>
               </View>
-            )}
+            )} */}
+
+            <View className="p-3">
+              <DataTable>
+                <DataTable.Header>
+                  <DataTable.Title>S.no</DataTable.Title>
+                  <DataTable.Title>Title</DataTable.Title>
+                </DataTable.Header>
+                {todos.length ? (
+                  todos.map((todo: TODO, index: number) => {
+                    return (
+                      <DataTable.Row key={todo.id}>
+                        <DataTable.Cell>{index + 1}</DataTable.Cell>
+                        <DataTable.Cell>{todo.title}</DataTable.Cell>
+                      </DataTable.Row>
+                    );
+                  })
+                ) : (
+                  <DataTable.Row>
+                    <DataTable.Cell>No Data Available</DataTable.Cell>
+                  </DataTable.Row>
+                )}
+              </DataTable>
+            </View>
           </ScrollView>
         </View>
 
