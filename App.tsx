@@ -6,14 +6,22 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  Alert,
+  Button,
 } from "react-native";
 import "./global.css";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
-import { DataTable } from "react-native-paper";
+import {
+  DataTable,
+  Divider,
+  Drawer,
+  Modal,
+  PaperProvider,
+  Portal,
+} from "react-native-paper";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 export interface TODO {
   userId: number;
@@ -29,10 +37,22 @@ export default function App() {
 
   const [todos, setTodos] = useState<TODO[]>([]);
 
+  const [modalState, setModalState] = useState<boolean>(false);
+
+  const [selectedTodo, setSelectedTodo] = useState<TODO>();
+
   function sayHii() {
     alert("Hii");
     // Alert.alert("Hii I am Kalees");
   }
+
+  const toggleModal = () => {
+    setModalState(!modalState);
+  };
+
+  const selectTodo = (todo: TODO) => {
+    setSelectedTodo(todo);
+  };
 
   const getTodos = async () => {
     try {
@@ -50,7 +70,7 @@ export default function App() {
 
   if (platform === "web") {
     return (
-      <View className="flex-1 bg-slate-200">
+      <View className="flex-1 bg-slate-200 relative">
         <View className="w-full px-5 bg-white py-2 flex flex-row justify-between items-center">
           <Text className="text-xl font-bold">API Integration & Deploy</Text>
 
@@ -91,18 +111,32 @@ export default function App() {
               </View>
             )} */}
 
-            <View className="p-3">
+            <View className="flex-1 h-64 p-3">
               <DataTable>
                 <DataTable.Header>
-                  <DataTable.Title>S.no</DataTable.Title>
+                  <DataTable.Title className="text-black">S.no</DataTable.Title>
                   <DataTable.Title>Title</DataTable.Title>
+                  <DataTable.Title>Action</DataTable.Title>
                 </DataTable.Header>
                 {todos.length ? (
                   todos.map((todo: TODO, index: number) => {
                     return (
                       <DataTable.Row key={todo.id}>
                         <DataTable.Cell>{index + 1}</DataTable.Cell>
-                        <DataTable.Cell>{todo.title}</DataTable.Cell>
+                        <DataTable.Cell className="">
+                          {todo.title.toUpperCase()}
+                        </DataTable.Cell>
+                        <DataTable.Cell>
+                          <MaterialIcons
+                            name="preview"
+                            size={24}
+                            color="black"
+                            onPress={() => {
+                              selectTodo(todo);
+                              toggleModal();
+                            }}
+                          />
+                        </DataTable.Cell>
                       </DataTable.Row>
                     );
                   })
@@ -115,6 +149,36 @@ export default function App() {
             </View>
           </ScrollView>
         </View>
+
+        {modalState && (
+          <View className="absolute flex-1 w-screen h-screen bg-black/30 top-0 left-0 flex justify-center items-center  p-5">
+            <View className="p-3 bg-white rounded w-96 max-sm:w-11/12">
+              <View className="pb-2 flex flex-row items-center justify-between">
+                <Text className="text-xl font-semibold">Modal</Text>
+                <FontAwesome
+                  name="close"
+                  size={24}
+                  color="black"
+                  className="cursor-pointer"
+                  onPress={toggleModal}
+                />
+              </View>
+              <Divider></Divider>
+              <View className="py-3">
+                <Text className="text-lg ">
+                  Title :{" "}
+                  <Text className="font-bold">
+                    {selectedTodo?.title.toUpperCase()}
+                  </Text>
+                </Text>
+              </View>
+              <Divider></Divider>
+              <View className="pt-3 flex flex-row justify-end">
+                <Button title="Close" onPress={toggleModal} color={"red"} />
+              </View>
+            </View>
+          </View>
+        )}
 
         <StatusBar style="auto" />
       </View>
